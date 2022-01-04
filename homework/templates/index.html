@@ -71,6 +71,7 @@
 
         $(document).ready(function () {
             q1()
+            showorder()
         });
 
         function q1() {
@@ -87,7 +88,51 @@
         }
 
         function order() {
-            alert('주문이 완료되었습니다!');
+            let name = $('#name').val()
+            let num = $('#inputGroupSelect01').val()
+            let address = $('#address').val()
+            let phone = $('#phone').val()
+
+
+            $.ajax({
+                type: "POST",
+                url: "/order",
+                data: {name_give: name, num_give: num, address_give : address, phone_give:phone},
+                success: function (response) { // 성공하면
+                    alert(response["msg"]);
+                    window.location.reload()
+                }
+            })
+
+        }
+
+        function showorder(){
+             $.ajax({
+                    type: "GET",
+                    url: "/order",
+                    data: {},
+                    success: function (response) {
+                        let orders = response['all_order']
+                        console.log(orders.length)
+                        for(let i = 0 ;i<orders.length;i++){
+                            let name = orders[i]['name']
+                            let num = orders[i]['num']
+                            let address = orders[i]['address']
+                            let phone = orders[i]['phone']
+
+
+                            let temp_html = `<tr>
+                                                <th scope="row">${name}</th>
+                                                    <td>${num}</td>
+                                                    <td>${address}</td>
+                                                    <td>@${phone}</td>
+                                              </tr>
+                                                  `
+                            $('#table').append(temp_html)
+                        }
+
+                    }
+                })
         }
     </script>
 </head>
@@ -106,7 +151,7 @@
             <div class="input-group-prepend">
                 <span class="input-group-text">주문자이름</span>
             </div>
-            <input type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+            <input id = 'name' type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
         </div>
         <div class="input-group mb-3">
             <div class="input-group-prepend">
@@ -123,17 +168,32 @@
             <div class="input-group-prepend">
                 <span class="input-group-text">주소</span>
             </div>
-            <input type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+            <input id = 'address' type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
         </div>
         <div class="input-group mb-3">
             <div class="input-group-prepend">
                 <span class="input-group-text">전화번호</span>
             </div>
-            <input type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+            <input id = 'phone' type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
         </div>
         <button type="button" onclick="order()" class="btn btn-primary btn-order">주문하기</button>
     </div>
+    <table class="table">
+    <thead>
+    <tr >
+        <th scope="col">이름</th>
+        <th scope="col">수량</th>
+        <th scope="col">주소</th>
+        <th scope="col">번호</th>
+    </tr>
+    </thead>
+    <tbody id = 'table'>
+
+    </tbody>
+</table>
 </div>
+
+
 </body>
 
 </html>
